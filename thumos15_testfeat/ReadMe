@@ -1,0 +1,38 @@
+Description:
+This directory contains our action detection codes for pyramid score feature generation. The algorithm is described in our notebook paper:
+http://storage.googleapis.com/www.thumos.info/thumos15_notebooks/TH15_ADSC.pdf
+
+The codes apply to the validation and test dataset, where the pyramid score features are used.
+
+Pre-requisites:
+1. VL_FEAT Toolbox. http://www.vlfeat.org/
+2. Improved Dense Trajectories (IDT). https://lear.inrialpes.fr/people/wang/improved_trajectories
+
+The fisher.c in (1) needs to be modified to return unnormalized additive Fisher Vectors. A modified version is provided. Save the mex file to vl_fisher_unorm.mexa64.
+
+For the Fisher Encoding part, we rewrite the following toolbox in matlab (for fast processing):
+https://github.com/chensun11/dtfv  -- Fisher Encoding of Improved Dense Trajectories
+
+Data:
+1. VAL_ANO.mat, TEST_ANO.mat -- contains annotation (name, frame number) of videos.
+2. UCF_PCA.mat -- contains PCA projection of IDT features (factor 2).
+3. UCF_GMM.mat -- contains Gaussian Mixture Models of IDT features from UCF-101.
+4. SVM_GFXY.mat -- contains 101376 * 101 dimensional SVM weights trained from UCF-101 (not provided due to large size, but simple to train from liblinear package).
+
+(2) and (3) are trained using https://github.com/chensun11/dtfv. For simplicity, we provide the results rather than the actural training codes.
+
+
+Process:
+1. Extract IDT features with default parameters. Each row should provide a 436-dimensional feature vector, which contains basic trajectory info, HOG, HOF, MBHX and MBHY features. Store the features in HDF-5 format for fast access (70~80 times speed up from text format).
+2. Using PCA for feature dimension reduction.
+3. Using unnormalized additive Fisher Encoding on these featues for every 5 consecutive frames. The cluster number is 256. We only use HOG, HOF, MBHX and MBHY features in concatination.
+4. Generate Pyramid score features using (3) and SVM weights as indicated in the notebook paper.
+
+Files:
+genAllTest5Frames.m --generate Fisher Vectors and meta info from IDTs. Calls getFV_5frame.m
+genAllTestPry.m     --generate pyramid score features. Calls getPry.m or getPry_gpu.m
+
+
+
+
+
