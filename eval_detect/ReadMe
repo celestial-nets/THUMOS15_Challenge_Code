@@ -1,0 +1,19 @@
+Description:
+This directory contains our action detection codes for label generation. The algorithm is described in our notebook paper:
+http://storage.googleapis.com/www.thumos.info/thumos15_notebooks/TH15_ADSC.pdf
+
+The codes apply to the validation and test dataset, where the pyramid score features are used.
+
+Pre-requisites:
+1. LIBLINEAR Toolbox. http://www.csie.ntu.edu.tw/~cjlin/liblinear/
+
+Data:
+1. CONFID(X).mat --5613*101 confidence scores from action classification (may not be used)
+2. score0524_W.mat, score_W.mat, scW.mat --detection SVM
+3. TEST_ANO.mat, VAL_ANO.mat, TM_ANO.mat --annotation for test and validation dataset
+4. TEST_FrameRate.mat, VAL_FrameRate.mat --frame rate for test and validation dataset
+
+Process & Files:
+1. According to the time annotation in validation set, generate score - label pairs for frames. --genTmFeat.m
+2. Train a detection SVM. --eval_detect_feat0530.m
+3. From score features, generate labels with post-processing. --genAllTestANO.m and genAllValANO.m, calls getANO.m and getFrmLBL.m
